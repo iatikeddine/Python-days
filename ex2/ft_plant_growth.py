@@ -30,6 +30,7 @@ if __name__ == "__main__":
     for x in range(6):
         rose.age()
         rose.grow()
+        #add plant
     print("=== Day 7 ===")
     print(rose.get_info())
     print(f"Growth this week: +{x + 1}cm")

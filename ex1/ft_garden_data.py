@@ -1,6 +1,7 @@
 class Plant:
     """This class stores basic information shared by all plants"""
     def __init__(self, name: str, height: int, age: int) -> None:
+        """Initizalizes plant with name, height and age"""
         self.name: str = name
         self.height: int = height
         self.age: int = age
