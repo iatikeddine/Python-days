@@ -1,14 +1,26 @@
 class GardenError(Exception):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
 
 class PlantError(GardenError):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
 
 class WaterError(GardenError):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
 
 class SunError(GardenError):
-    pass
+    def __init__(self, message):
+        super().__init__(message)
+        self.message = message
+
 
 class GardenManager:
     plants = []
@@ -19,13 +31,14 @@ class GardenManager:
         success = True
         try:
             if name == "":
-                raise PlantError("empty name")
+                raise PlantError("Error adding plant: Plant name "
+                                 "cannot be empty!")
             else:
                 cls.plants.append(plant)
                 print(f"Added {name} successfully")
-        except GardenError:
+        except GardenError as e:
             success = False
-            print("Error adding plant: Plant name cannot be empty!")
+            print(e)
 
     def water_plants(self, plants):
         print("Opening watering system")
