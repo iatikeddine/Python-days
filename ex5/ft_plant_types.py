@@ -18,7 +18,6 @@ class Flower(Plant):
     and the ability to bloom.
     """
     def __init__(self, name: str, height: int, age: int, color: str) -> None:
-
         """Initialize a Flower instance."""
         super().__init__(name, height, age)
         self.color: str = color
