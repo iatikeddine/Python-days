@@ -1,3 +1,12 @@
+import sys
+
+inventory = {
+    "sword": 1
+}
+
+if len(sys.argv) < 2:
+    print("")
+
 print("=== Inventory System Analysis ===")
 total_items = 0
 for item in inventory:

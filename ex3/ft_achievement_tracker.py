@@ -3,7 +3,8 @@ print()
 
 alice = set(("first_kill", "level_10", "treasure_hunter", "speed_demon"))
 bob = set(("first_kill", "level_10", "boss_slayer", "collector"))
-charlie = set(("level_10", "treasure_hunter", "boss_slayer", "speed_demon", "perfectionist"))
+charlie = set(("level_10", "treasure_hunter", "boss_slayer",
+               "speed_demon", "perfectionist"))
 
 print(f"Player alice achievements: {alice}")
 print(f"Player bob achievements: {bob}")
