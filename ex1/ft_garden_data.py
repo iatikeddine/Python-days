@@ -1,15 +1,13 @@
 class Plant:
-    """This class stores basic information shared by all plants"""
     def __init__(self, name: str, height: int, age: int) -> None:
-        """Initizalizes plant with name, height and age"""
-        self.name: str = name
-        self.height: int = height
-        self.age: int = age
+        self.name = name
+        self.height = height
+        self.age = age
 
 
-rose: Plant = Plant("Rose", 25, 30)
-sunflower: Plant = Plant("Sunflower", 80, 45)
-cactus: Plant = Plant("Cactus", 15, 120)
+rose = Plant("Rose", 25, 30)
+sunflower = Plant("Sunflower", 80, 45)
+cactus = Plant("Cactus", 15, 120)
 
 if __name__ == "__main__":
     print("=== Garden Plant Registry ===")
