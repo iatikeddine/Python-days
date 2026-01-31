@@ -21,7 +21,7 @@ class GardenManager:
             print(f"\nPlants added: {i}, Total growth: {i}cm")
         get_stats = staticmethod(get_stats)
 
-        def get_types(garden) -> tuple:
+        def get_types(garden: "Garden") -> tuple:
             regular = 0
             flowering = 0
             prize = 0
@@ -89,7 +89,7 @@ class Plant:
     def describe_plant(self) -> str:
         return f"{self.name}: {self.height}cm"
 
-    def get_points(self):
+    def get_points(self) -> int:
         return 0
 
 
@@ -108,7 +108,7 @@ class FloweringPlant(Plant):
         self.flowering += 1
         return (0, self.flowering, 0)
 
-    def get_points(self):
+    def get_points(self) -> int:
         return 0
 
 
