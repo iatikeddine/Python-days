@@ -1,14 +1,7 @@
 import sys
 import math
 
-
-class ParsingError(Exception):
-    def __init__(self, message):
-        super().__init__(message)
-        self.message = message
-
-
-def coordinate_system():
+def coordinate_system() -> None:
     print("=== Game Coordinate System ===")
     print()
 
@@ -26,10 +19,34 @@ def coordinate_system():
     distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
     print(f"Distance between {position_0} and {position_1}: {distance:.2f}\n")
 
-    if (len(sys.argv) == 2):
+    if len(sys.argv) == 2:
         coordinates = sys.argv[1]
         coordinates = coordinates.split(',')
         if len(coordinates) != 3:
-            raise ParsingError("Error: Coordinates shoulb be x,y,x")
+            print("Error: Coordinates shoulb be x,y,x")
+            return
+        try:
+            coordinates = [float(cord) for cord in coordinates]
+        except ValueError as e:
+            print(f"Error parsing coordinates: {e}")
+            print(f'Error details - Type: ValueError, Args: ("{e}")')
         else:
-            print(f"Parsing coordinates: ")
+            print(f'Parsing coordinates: '
+                  f'"{coordinates[0]},{coordinates[1]},{coordinates[2]}"')
+            position_1 = (tuple(coordinates))
+            print(f"Parsed position: {position_1}")
+            x2 = position_1[0]
+            y2 = position_1[1]
+            z2 = position_1[2]
+            distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
+            print(f"Distance between {position_0} and {position_1}: {distance:.1f}")
+    elif len(sys.argv) > 2:
+        print("Only 1 set of cordinates allowed in this format [x,y,z]")
+
+    print("\nUnpacking demonstration:")
+    x, y, z = position_1
+    print(f"Player at x={x}, y={y}, z={z}")
+    print(f"Coordinates: X={x}, Y={y}, Z={z}")
+
+if __name__ == "__main__":
+    coordinate_system()
