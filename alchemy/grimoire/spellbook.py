@@ -1,7 +1,8 @@
 def record_spell(spell_name: str, ingredients: str) -> str:
-    from .validator import validate_ingredients
+    from alchemy.grimoire import validate_ingredients
     result = validate_ingredients(ingredients)
-    if "VALID" in result:
-        return f"Spell recorded: {spell_name} ({result})"
-    elif "INVALID" in result:
-        return f"Spell rejected: {spell_name} ({result})"
+    splited = result.split()
+    for element in splited:
+        if element == "VALID":
+            return f"Spell recorded: {spell_name} ({result})"
+    return f"Spell rejected: {spell_name} ({result})"
