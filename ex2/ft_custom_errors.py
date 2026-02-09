@@ -1,18 +1,15 @@
 class GardenError(Exception):
-    """A basic error for garden problems"""
     def __init__(self, message: str) -> None:
         super().__init__(message)
         self.message = message
 
 
 class PlantError(GardenError):
-    """For problems with plants"""
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
 
 class WaterError(GardenError):
-    """For problems with watering"""
     def __init__(self, message: str) -> None:
         super().__init__(message)
 
