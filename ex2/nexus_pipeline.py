@@ -55,7 +55,6 @@ class TransformStage:
         if not isinstance(data, dict):
             raise ValueError("Error: Data is a not a Dictionary")
 
-        data["processed"] = True
         data["timestamp"] = 2087
 
         if data["type"] == "list":
@@ -68,9 +67,7 @@ class TransformStage:
             data["words"] = len(data["data"])
         elif data["type"] == "number":
             data["is_positive"] = data["data"] > 0
-        
         return data
-
 
 
 class OutputStage:
@@ -81,21 +78,24 @@ class OutputStage:
         data_type = data["type"]
         if data_type == "csv":
             return (
-                f'Processed text: {data["words"]} words, {data["length"]} chars'
+                f'Processed text: {data["words"]} words, '
+                f'{data["length"]} chars'
                 )
         elif data_type == "list":
             return f'Processed list -> {data["count"]} items'
         elif data_type == "number":
-            return f'Processed number: {data["data"]} positive: {data["is_positive"]}'
+            return (
+                f'Processed number: {data["data"]} positive: '
+                f'{data["is_positive"]}')
         else:
-            return f'Processed {data_type}: year {data["timestamp"]}'
+            return f'Processed {data_type} -> year {data["timestamp"]}'
 
 
 class JSONAdapter(ProcessPipeline):
     def __init__(self, pipeline_id):
         super().__init__()
         self.pipeline_id = pipeline_id
-    
+
     def process(self, data: Dict):
         if not isinstance(data, dict):
             raise ValueError("Error: invalid data (Not a dict)")
@@ -114,11 +114,11 @@ class CSVAdapter(ProcessPipeline):
     def __init__(self, pipeline_id):
         super().__init__()
         self.pipeline_id = pipeline_id
-    
+
     def process(self, data: str):
         if not isinstance(data, str):
             raise ValueError("Error: invalid data (Not a string)")
-        
+
         if not self.stages:
             self.add_stage(InputStage())
             self.add_stage(TransformStage())
@@ -129,27 +129,27 @@ class CSVAdapter(ProcessPipeline):
             result = stage.process(result)
 
         return result
+
 
 class StreamAdapter(ProcessPipeline):
     def __init__(self, pipeline_id):
         super().__init__()
         self.pipeline_id = pipeline_id
-    
+
     def process(self, data: list):
         if not isinstance(data, list):
             raise ValueError("Error: invalid data (not a list)")
-        
+
         if not self.stages:
             self.add_stage(InputStage())
             self.add_stage(TransformStage())
             self.add_stage(OutputStage())
-        
+
         result = data
         for stage in self.stages:
             result = stage.process(result)
 
         return result
-
 
 
 class NexusManager:
@@ -162,7 +162,7 @@ class NexusManager:
     def process_data(self, data_list: list[Any]):
         if not self.pipelines:
             raise ValueError("No pipelines configured")
-        
+
         results = []
         for element in data_list:
             try:
@@ -176,15 +176,19 @@ class NexusManager:
                     result = self.pipelines[2].process(element)
                     results.append(result)
                 else:
-                    raise ValueError(f"Unsupported data type: {type(element).__name__}")
-            
+                    raise ValueError(
+                        f"Unsupported data type: "
+                        f"{type(element).__name__}")
+
             except ValueError as e:
                 print(f"Error detected in pipeline: {e}")
                 print("Recovery initiated: Switching to backup processor")
-                print("Recovery successful: Pipeline restored, processing resumed")
+                print("Recovery successful: Pipeline restored, "
+                      "processing resumed")
                 continue
-        
+
         return results
+
 
 if __name__ == "__main__":
     print("=== CODE NEXUS - ENTERPRISE PIPELINE SYSTEM ===\n")
@@ -198,9 +202,9 @@ if __name__ == "__main__":
     data_list = [
         {"sensor": "temp", "value": 23.5},
         "user,action,timestamp",
-        [22.1, 23.5, 21.8]       
+        [22.1, 23.5, 21.8]
                  ]
-    
+
     results = manager.process_data(data_list)
 
     print("Initializing Nexus Manager...")
