@@ -1,16 +1,16 @@
 class InvalidPlant(Exception):
     pass
 
-def water_plants(plant_list) -> None:
+def water_plants(plant_list: list) -> None:
     success = True
     try:
         print("Opening watering system")
         for plant in plant_list:
-            if plant == "":
-                raise InvalidPlant("Invalid Plant Name")
+            if plant is None or plant == "":
+                raise InvalidPlant()
             for c in plant:
                 if c < 'a' or c > 'z':
-                    raise InvalidPlant("Invalid Plant Name")
+                    raise InvalidPlant()
             print(f"Watering {plant}")
     except InvalidPlant:
         success = False
@@ -26,7 +26,9 @@ def test_watering_system() -> None:
     print("Testing normal watering...")
     water_plants(["tomato", "lettuce", "carrots"])
     print("\nTesting with error...")
-    water_plants(["tomato", "", "carrots"])
+    water_plants(["tomato", None, "carrots"])
     print("\nCleanup always happens, even with errors!")
 
-test_watering_system()
+
+if __name__ == "__main__":
+    test_watering_system()
