@@ -1,6 +1,7 @@
 class InvalidPlant(Exception):
     pass
 
+
 def water_plants(plant_list: list) -> None:
     success = True
     try:
