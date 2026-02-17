@@ -22,10 +22,10 @@ class DataStream(ABC):
                     if int(splited[1]) > 50:
                         critical += 1
                 except ValueError:
-                    return "None digit value"
+                    return "Error: None digit value"
             error_list_1.append(critical)
             return error_list_1
-        
+
         elif criteria == "transaction":
             error_list_2 = []
             large = 0
@@ -35,12 +35,14 @@ class DataStream(ABC):
                     if int(splited[1]) > 100:
                         large += 1
                 except ValueError:
-                    return "None digit value"
+                    return "Error: None digit value"
             error_list_2.append(large)
             return error_list_2
 
     def get_stats(self) -> Dict[str, Union[str, int, float]]:
-        return f"Stream ID: {self.stream_id}, Type: {self.type}"
+        return {
+            "id": self.stream_id
+        }
 
 
 class SensorStream(DataStream):
@@ -53,6 +55,9 @@ class SensorStream(DataStream):
         temp = data_batch[0].split(":")
         return (f"Sensor analysis: {data_len} readings processed, "
                 f"avg temp: {temp[1]}°C")
+
+    def get_stats(self):
+        return super().get_stats() + f", Type: {self.type}"
 
 
 class TransactionStream(DataStream):
@@ -106,7 +111,7 @@ class StreamProcessor:
         elif isinstance(self.process, EventStream):
             return (f"Processing event batch: "
                     f"[{self.data[0]}, {self.data[1]}, {self.data[2]}]")
-    
+
     def process_data(self):
         return len(self.data)
 
