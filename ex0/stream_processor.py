@@ -19,42 +19,48 @@ class DataProcessor(ABC):
 class NumericProcessor(DataProcessor):
 
     def validate(self, data: Any) -> bool:
-        if type(data).__name__ != "list":
+        # checks if data is a list
+        if type(data).__name__ != "list" or not data:
             return False
         else:
-            count = 0
+            # check if all elements inside the list are floats or ints
             for element in data:
-                if type(element).__name__ == "int" or\
-                        type(element).__name__ == "float":
-                    count += 1
-            if count == len(data):
-                return True
-            else:
-                return False
+                if type(element).__name__ != "int" and\
+                        type(element).__name__ != "float":
+                    return False
+        return True
 
     def process(self, data: Any) -> str:
-        numeric_value = len(data)
-        total = sum(data)
-        avg = total / numeric_value
-        return (f"Processed {numeric_value} numeric values,"
-                f" sum={total}, avg={avg:.1f}")
+        try:
+            numeric_value = len(data)
+            total = sum(data)
+            avg = total / numeric_value
+            return (f"Processed {numeric_value} numeric values,"
+                    f" sum={total}, avg={avg:.1f}")
+        # sum does not work on all data types
+        # if empty list we need to catch Zerodivision error
+        except (ZeroDivisionError, TypeError):
+            return "Error: Non valid Data"
 
 
 class TextProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
-        if type(data).__name__ != "str":
+        if type(data).__name__ != "str" or not data:
             return False
         return True
 
     def process(self, data: Any) -> str:
-        chars = len(data)
-        count = len(data.split())
-        return f"Processed text: {chars} characters, {count} words"
+        try:
+            chars = len(data)
+            count = len(data.split())
+            return f"Processed text: {chars} characters, {count} words"
+        except (TypeError, AttributeError):
+            return "Error: Non valid Data"
 
 
 class LogProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
-        if type(data).__name__ != "str":
+        if type(data).__name__ != "str" or not data:
             return False
 
         check = data.split(":")
@@ -65,11 +71,19 @@ class LogProcessor(DataProcessor):
         return False
 
     def process(self, data: Any) -> str:
-        check = data.split(":")
-        if check[0] == "ERROR":
-            return f"[ALERT] ERROR level detected: {check[1]}"
-        elif check[0] == "INFO":
-            return f"[INFO] INFO level detected: {check[1]}"
+        try:
+            check = data.split(":", 1)
+            if check[0] == "ERROR":
+                return f"[ALERT] ERROR level detected: {check[1].strip()}"
+            elif check[0] == "INFO":
+                return f"[INFO] INFO level detected: {check[1].strip()}"
+            else:
+                return "Error: Unknown log"
+        except (AttributeError, IndexError):
+            return "Error: Non valid Data"
+
+    def format_output(self, result: str) -> str:
+        return super().format_output(result)
 
 
 def stream_processor() -> None:
@@ -83,11 +97,9 @@ def stream_processor() -> None:
         print("Validation: Numeric data verified")
         print(num_process.format_output(num_process.process(data_1)))
     else:
-        print("Validation: Could not validate Numeric data")
+        print("Validation: Could not validate data")
 
-    print()
-
-    print("Initializing Text Processor...")
+    print("\nInitializing Text Processor...")
     text_processor = TextProcessor()
     data_2 = "Hello Nexus World"
     print(f'Processing data: "{data_2}"')
@@ -98,9 +110,7 @@ def stream_processor() -> None:
     else:
         print("Validation:: Coud not verify Text data")
 
-    print()
-
-    print("Initializing Log Processor...")
+    print("\nInitializing Log Processor...")
     log_processor = LogProcessor()
     data_3 = "ERROR: Connection timeout"
     print(f"Processing data: {data_3}")
@@ -110,9 +120,7 @@ def stream_processor() -> None:
     else:
         print("Validation: Could not validate log entry")
 
-    print()
-
-    print("=== Polymorphic Processing Demo ===")
+    print("\n=== Polymorphic Processing Demo ===")
     data_1 = [1, 2, 3]
     data_2 = "Hello, world"
     data_3 = "INFO: System ready"
