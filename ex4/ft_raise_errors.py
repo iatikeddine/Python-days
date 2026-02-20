@@ -44,4 +44,7 @@ def test_plant_checks() -> None:
 
 
 if __name__ == "__main__":
-    test_plant_checks()
+    try:
+        test_plant_checks()
+    except Exception as e:
+        print(e)

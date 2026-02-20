@@ -8,14 +8,11 @@ def water_plants(plant_list: list) -> None:
         print("Opening watering system")
         for plant in plant_list:
             if plant is None or plant == "":
-                raise InvalidPlant()
-            for c in plant:
-                if c < 'a' or c > 'z':
-                    raise InvalidPlant()
+                raise InvalidPlant("Cannot water None - invalid plant!")
             print(f"Watering {plant}")
-    except InvalidPlant:
+    except InvalidPlant as e:
         success = False
-        print("Error: Cannot water None - invalid plant!")
+        print(f"Error: {e}")
     finally:
         print("Closing watering system (cleanup)")
     if success:
@@ -32,4 +29,7 @@ def test_watering_system() -> None:
 
 
 if __name__ == "__main__":
-    test_watering_system()
+    try:
+        test_watering_system()
+    except Exception as e:
+        print(e)
