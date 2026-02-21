@@ -2,7 +2,7 @@ import sys
 
 
 def ft_command_quest() -> None:
-    total: int = len(sys.argv)
+    total = len(sys.argv)
     print("=== Command Quest ===")
     if total < 2:
         print("No arguments provided!")
@@ -17,5 +17,5 @@ def ft_command_quest() -> None:
 
     print(f"Total arguments: {total}")
 
-
-ft_command_quest()
+if __name__ == "__main__":
+    ft_command_quest()

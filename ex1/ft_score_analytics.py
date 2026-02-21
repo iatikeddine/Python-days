@@ -27,4 +27,5 @@ def ft_score_analytics() -> None:
             print(f"Score range: {max(scores_list) - min(scores_list)}")
 
 
-ft_score_analytics()
+if __name__ == "__main__":
+    ft_score_analytics()

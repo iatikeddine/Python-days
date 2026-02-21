@@ -5,15 +5,15 @@ def coordinate_system() -> None:
     print("=== Game Coordinate System ===")
     print()
 
-    position_0 = (0, 0, 0)
-    x1 = position_0[0]
-    y1 = position_0[1]
-    z1 = position_0[2]
+    try:
+        position_0 = (0, 0, 0)
+        x1, y1, z1 = (int(x) for x in position_0)
 
-    position_1 = (10, 20, 5)
-    x2 = position_1[0]
-    y2 = position_1[1]
-    z2 = position_1[2]
+        position_1 = (10, 20, 5)
+        x2, y2, z2 = (int(x) for x in position_1)
+    except (ValueError, TypeError):
+        print(f"Error: Position {position_0} is not valid")
+        return
     print(f"Position created: {position_1}")
 
     distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
@@ -23,25 +23,24 @@ def coordinate_system() -> None:
         coordinates = sys.argv[1]
         coordinates = coordinates.split(',')
         if len(coordinates) != 3:
-            print("Error: Coordinates shoulb be x,y,x")
+            print("Error: Coordinates should be x,y,z")
             return
         try:
-            coordinates = [float(cord) for cord in coordinates]
+            coordinates = [int(cord) for cord in coordinates]
         except ValueError as e:
-            print(f"Error parsing coordinates: {e}")
-            print(f'Error details - Type: ValueError, Args: ("{e}")')
+            error_message = e.args[0]
+            print(f"Error parsing coordinates: {error_message}")
+            print(f'Error details - Type: ValueError, Args: ("{error_message}")')
         else:
             print(f'Parsing coordinates: '
                   f'"{coordinates[0]},{coordinates[1]},{coordinates[2]}"')
-            position_1 = (tuple(coordinates))
+            position_1 = tuple(coordinates)
             print(f"Parsed position: {position_1}")
-            x2 = position_1[0]
-            y2 = position_1[1]
-            z2 = position_1[2]
+            x2, y2, z2 = position_1
             distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
             print(f"Distance between {position_0} and {position_1}: {distance:.1f}")
     elif len(sys.argv) > 2:
-        print("Only 1 set of cordinates allowed in this format [x,y,z]")
+        print("Only 1 set of coordinates allowed in this format [x,y,z]")
 
     print("\nUnpacking demonstration:")
     x, y, z = position_1
