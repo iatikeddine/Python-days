@@ -1,9 +1,14 @@
 import sys
 import math
 
+
+class InvalidCordsError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def coordinate_system() -> None:
-    print("=== Game Coordinate System ===")
-    print()
+    print("=== Game Coordinate System ===\n")
 
     try:
         position_0 = (0, 0, 0)
@@ -12,8 +17,7 @@ def coordinate_system() -> None:
         position_1 = (10, 20, 5)
         x2, y2, z2 = (int(x) for x in position_1)
     except (ValueError, TypeError):
-        print(f"Error: Position {position_0} is not valid")
-        return
+        raise InvalidCordsError(f"Error: Position {position_0} is not valid")
     print(f"Position created: {position_1}")
 
     distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
@@ -23,14 +27,14 @@ def coordinate_system() -> None:
         coordinates = sys.argv[1]
         coordinates = coordinates.split(',')
         if len(coordinates) != 3:
-            print("Error: Coordinates should be x,y,z")
-            return
+            raise InvalidCordsError("Error: Coordinates should be x,y,z")
         try:
             coordinates = [int(cord) for cord in coordinates]
         except ValueError as e:
             error_message = e.args[0]
             print(f"Error parsing coordinates: {error_message}")
-            print(f'Error details - Type: ValueError, Args: ("{error_message}")')
+            print(f'Error details - Type: ValueError, Args: '
+                  f'("{error_message}")')
         else:
             print(f'Parsing coordinates: '
                   f'"{coordinates[0]},{coordinates[1]},{coordinates[2]}"')
@@ -38,7 +42,8 @@ def coordinate_system() -> None:
             print(f"Parsed position: {position_1}")
             x2, y2, z2 = position_1
             distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2 + (z2 - z1)**2)
-            print(f"Distance between {position_0} and {position_1}: {distance:.1f}")
+            print(f"Distance between {position_0} and {position_1}: "
+                  f"{distance:.1f}")
     elif len(sys.argv) > 2:
         print("Only 1 set of coordinates allowed in this format [x,y,z]")
 
@@ -47,5 +52,10 @@ def coordinate_system() -> None:
     print(f"Player at x={x}, y={y}, z={z}")
     print(f"Coordinates: X={x}, Y={y}, Z={z}")
 
+
 if __name__ == "__main__":
-    coordinate_system()
+    try:
+        coordinate_system()
+    except InvalidCordsError as e:
+        message = e.args[0]
+        print(message)

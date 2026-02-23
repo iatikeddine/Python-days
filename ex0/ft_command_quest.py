@@ -17,5 +17,6 @@ def ft_command_quest() -> None:
 
     print(f"Total arguments: {total}")
 
+
 if __name__ == "__main__":
     ft_command_quest()

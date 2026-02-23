@@ -11,9 +11,10 @@ def game_event_generator(total: int) -> Generator:
             event = events[i % len(events)]
             level = (i % 20) + 1
             yield (i + 1, player, level, event)
-    except (ValueError , TypeError ) as e:
+    except (ValueError, TypeError) as e:
         print(e)
         return
+
 
 def fibonacci_generator() -> Generator:
     a, b = 0, 1
@@ -44,10 +45,12 @@ def ft_data_stream() -> None:
     treasure_events = 0
     levelup_events = 0
 
-    for event_id, player, level, event in game_event_generator(total_events):
-        if event_id <= 3:
-            print(f"Event {event_id}: Player {player} (level {level}) {event}")
-        if event_id == 4:
+    for event_number, player, level, event in \
+            game_event_generator(total_events):
+        if event_number <= 3:
+            print(f"Event {event_number}: Player {player} "
+                  f"(level {level}) {event}")
+        if event_number == 4:
             print("...\n")
         if level >= 10:
             high_level += 1
@@ -61,7 +64,7 @@ def ft_data_stream() -> None:
     print(f"High-level players (10+): {high_level}")
     print(f"Treasure events: {treasure_events}")
     print(f"Level-up events: {levelup_events}")
-    print(f"Memory usage: Constant (streaming)")
+    print("Memory usage: Constant (streaming)")
 
     print("\n=== Generator Demonstration ===")
 

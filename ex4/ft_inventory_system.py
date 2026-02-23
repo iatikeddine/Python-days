@@ -1,6 +1,11 @@
 import sys
 
 
+class InvalidFormat(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+
 def ft_inventory_system() -> None:
 
     if len(sys.argv) < 2:
@@ -14,24 +19,21 @@ def ft_inventory_system() -> None:
         try:
             key, value = arg.split(':')
             if not key:
-                print(f"Error: invalid format '{arg}', expected name:quantity")
-                return
+                raise InvalidFormat(f"invalid format '{arg}', "
+                                    f"expected name:quantity")
             if key not in valid_items:
-                print(f"Error: '{key}' is not a valid item")
-                return
+                raise InvalidFormat(f"'{key}' is not a valid item")
             quantity = int(value)
             if quantity < 0:
-                print("Error: quantity cannot be negative")
-                return
+                raise InvalidFormat("quantity cannot be negative")
             inventory.update({key: {"quantity": quantity}})
         except ValueError:
-            print(f"Error: invalid format '{arg}', expected name:quantity")
-            return
+            raise ValueError(f"Error: invalid format '{arg}', expected "
+                             f"name:quantity")
 
     if not inventory:
-        print("Error: no valid items parsed")
-        return
-    
+        raise InvalidFormat("no valid items parsed")
+
     print("=== Inventory System Analysis ===")
     total_items = 0
     for item in inventory:
@@ -70,7 +72,8 @@ def ft_inventory_system() -> None:
     for key, value in inventory.items():
         if key == "potion":
             moderate[key] = value["quantity"]
-        if key == "sword" or key == "shield" or key == "armor" or key == "helmet":
+        if key == "sword" or key == "shield" or key == "armor" or \
+                key == "helmet":
             scarce[key] = value["quantity"]
 
     print(f"Moderate: {moderate}")
@@ -92,11 +95,12 @@ def ft_inventory_system() -> None:
     print(f"Dictionary keys: {inventory_keys}")
     print(f"Dictionary values: {inventory_values}")
     if "sword" in inventory:
-        print(f"Sample lookup - 'sword':{inventory.get('sword')} in inventory: True")
+        print(f"Sample lookup - 'sword':{inventory.get('sword')} in "
+              f"inventory: True")
 
 
 if __name__ == "__main__":
     try:
         ft_inventory_system()
-    except ZeroDivisionError as e:
+    except (InvalidFormat, ZeroDivisionError, ValueError) as e:
         print(f"Error: {e}")
