@@ -39,7 +39,7 @@ player_scores = {player["name"]: player["score"] for player in players}
 print(f"Player scores: {player_scores}")
 
 
-def score_category(score: int):
+def score_category(score: int) -> None:
     try:
         if score >= 2000:
             return "high"
@@ -64,10 +64,10 @@ print("\n=== Set Comprehension Examples ===")
 unique_players = {player["name"] for player in players}
 print(f"Unique players: {unique_players}")
 
-unique_achievements = {a for p in players for a in p["achievements"]}
+unique_achievements = {a for player in players for a in player["achievements"]}
 print(f"Unique achievements: {unique_achievements}")
 
-active_regions = {p["region"] for p in players if p["active"]}
+active_regions = {player["region"] for player in players if player["active"]}
 print(f"Active regions: {active_regions}")
 
 print("\n=== Combined Analysis ===")
@@ -78,12 +78,12 @@ print(f"Total players: {total_players}")
 total_unique_achievements = len(unique_achievements)
 print(f"Total unique achievements: {total_unique_achievements}")
 
-scores = [p["score"] for p in players]
+scores = [player["score"] for player in players]
 average_score = sum(scores) / len(scores)
 print(f"Average score: {average_score}")
 
-top = sorted(players, key=lambda p: p["score"], reverse=True)[0]
+top = sorted([player["score"] for player in players])
 print(
-    f"Top performer: {top['name']} "
+    f"Top performer: {top} "
     f"({top['score']} points, {len(top['achievements'])} achievements)"
 )
