@@ -17,7 +17,7 @@ def coordinate_system() -> None:
         position_1 = (10, 20, 5)
         x2, y2, z2 = (int(x) for x in position_1)
     except (ValueError, TypeError):
-        raise InvalidCordsError(f"Error: Position {position_0} is not valid")
+        raise InvalidCordsError("Error: Position is not valid")
     print(f"Position created: {position_1}")
 
     distance = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)

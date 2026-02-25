@@ -14,7 +14,7 @@ def ft_score_analytics() -> None:
             try:
                 scores_list.append(int(x))
             except ValueError:
-                print(f"oops, I typed {x} instead of '1000'")
+                print(f"oops, I typed {x} instead of number")
         if len(scores_list) == 0:
             print("All inputs are invalid")
         else:

@@ -1,11 +1,20 @@
 def ft_achievement_tracker() -> None:
     print("=== Achievement Tracker System ===\n")
-    alice = set(("first_kill", "level_10", "treasure_hunter",
+    try:
+        alice = set(("first_kill", "level_10", "treasure_hunter",
                      "speed_demon"))
-    bob = set(("first_kill", "level_10", "boss_slayer", "collector"))
-    charlie = set((
-            "level_10", "treasure_hunter", "boss_slayer",
-            "speed_demon", "perfectionist"))
+    except TypeError:
+        alice = set()
+    try:
+        bob = set(("first_kill", "level_10", "boss_slayer", "collector"))
+    except TypeError:
+        bob = set()
+    try:
+        charlie = set((
+                "level_10", "treasure_hunter", "boss_slayer",
+                "speed_demon", "perfectionist"))
+    except TypeError:
+        charlie = set()
 
     print(f"Player alice achievements: {alice}")
     print(f"Player bob achievements: {bob}")

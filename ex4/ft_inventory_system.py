@@ -9,8 +9,8 @@ class InvalidFormat(Exception):
 def ft_inventory_system() -> None:
 
     if len(sys.argv) < 2:
-        print("Usage: python3 ft_inventory_system.py sword:1 potion:5 ...")
-        return
+        raise InvalidFormat("Usage: python3 ft_inventory_system.py sword:1 "
+                            "potion:5 ...")
 
     valid_items = ["sword", "potion", "shield", "armor", "helmet"]
 
