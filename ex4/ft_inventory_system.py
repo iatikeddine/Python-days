@@ -61,7 +61,7 @@ def ft_inventory_system() -> None:
             print(f"Most abundant: {item} ({largest} units)")
             break
 
-    for item in inventory:
+    for item in inventory.keys():
         if inventory[item]["quantity"] == smallest:
             print(f"Least abundant: {item} ({smallest} unit)")
             break
