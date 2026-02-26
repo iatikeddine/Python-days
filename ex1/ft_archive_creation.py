@@ -18,5 +18,6 @@ def ft_archive_creation():
     except (PermissionError, FileNotFoundError, IsADirectoryError) as e:
         print("Error:", e)
 
+
 if __name__ == "__main__":
     ft_archive_creation()

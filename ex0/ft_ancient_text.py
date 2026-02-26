@@ -1,5 +1,5 @@
 def ft_ancient_text() -> None:
-    vault = "test.txt"
+    vault = "ancient_fragment.txt"
 
     try:
         print("=== CYBER ARCHIVES - DATA RECOVERY SYSTEM ===\n")
