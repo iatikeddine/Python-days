@@ -92,7 +92,7 @@ if __name__ == "__main__":
     player_scores = {player["name"]: player["score"] for player in players}
     print(f"Player scores: {player_scores}")
 
-    def score_category(score: int) -> None:
+    def score_category(score: int) -> str:
         try:
             if score >= 2000:
                 return "high"
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     average_score = sum(scores) / len(scores)
     print(f"Average score: {average_score}")
 
-    def get_score(player):
+    def get_score(player: dict) -> int:
         return player["score"]
 
     top = sorted(players, key=get_score)[-1]
