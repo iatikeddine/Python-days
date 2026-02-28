@@ -5,9 +5,11 @@ def ft_crisis_response() -> None:
         print("CRISIS ALERT: Attempting access to 'lost_archive.txt'...")
         with open("lost_archive.txt", "r") as lost:
             print(lost.read())
-    except (FileNotFoundError, PermissionError):
+    except FileNotFoundError:
         print("RESPONSE: Archive not found in storage matrix")
         print("STATUS: Crisis handled, system stable")
+    except Exception as e:
+        print(f"Error: {e}")
 
     print()
 
@@ -15,9 +17,11 @@ def ft_crisis_response() -> None:
         print("CRISIS ALERT: Attempting access to 'classified_vault.txt'...")
         with open("classified_data.txt", "r") as vault:
             print(vault.read())
-    except (PermissionError, FileNotFoundError):
+    except PermissionError:
         print("RESPONSE: Security protocols deny access")
         print("STATUS: Crisis handled, security maintained")
+    except Exception as e:
+        print(f"Error: {e}")
 
     print()
 
@@ -29,7 +33,7 @@ def ft_crisis_response() -> None:
             print("\nAll crisis scenarios handled successfully. "
                   "Archives secure.")
 
-    except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
+    except Exception as e:
         print(f"Error: {e}")
 
 

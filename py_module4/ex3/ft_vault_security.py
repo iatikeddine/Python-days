@@ -10,8 +10,9 @@ def ft_vault_security() -> None:
             print(vault_1.read())
             print()
 
-    except (PermissionError, FileNotFoundError, ZeroDivisionError) as e:
+    except Exception as e:
         print(f"Error: {e}")
+
     try:
         with open("security_protocols.txt", "w") as secure:
             print("SECURE PRESERVATION:")
@@ -21,7 +22,7 @@ def ft_vault_security() -> None:
             print("Vault automatically sealed upon completion\n")
             print("All vault operations completed with maximum security.")
 
-    except (PermissionError, FileNotFoundError, ZeroDivisionError) as e:
+    except Exception as e:
         print(f"Error: {e}")
 
 

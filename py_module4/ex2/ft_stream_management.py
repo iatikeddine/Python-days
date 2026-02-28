@@ -10,9 +10,8 @@ def ft_stream_management() -> None:
         print(f"Error: {e}", file=sys.stderr)
         return
 
-    print()
     print(
-        f"[STANDARD] Archive status from {archivist_id}: "
+        f"\n[STANDARD] Archive status from {archivist_id}: "
         f"{status_report}"
     )
     print(
