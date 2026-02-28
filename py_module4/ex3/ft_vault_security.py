@@ -1,4 +1,4 @@
-def ft_vault_security():
+def ft_vault_security() -> None:
     classified = "classified_data.txt"
 
     print("=== CYBER ARCHIVES - VAULT SECURITY SYSTEM ===\n")
@@ -11,19 +11,18 @@ def ft_vault_security():
             print()
 
     except (PermissionError, FileNotFoundError, ZeroDivisionError) as e:
-        print("Error:", e)
+        print(f"Error: {e}")
     try:
         with open("security_protocols.txt", "w") as secure:
             print("SECURE PRESERVATION:")
             new_data = "[CLASSIFIED] New security protocols archived\n"
             secure.write(new_data)
             print(new_data, end="")
-            10/0
             print("Vault automatically sealed upon completion\n")
             print("All vault operations completed with maximum security.")
 
     except (PermissionError, FileNotFoundError, ZeroDivisionError) as e:
-        print("Error:", e)
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":

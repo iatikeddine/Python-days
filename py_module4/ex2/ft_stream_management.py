@@ -1,10 +1,14 @@
 import sys
 
 
-def ft_stream_management():
+def ft_stream_management() -> None:
     print("=== CYBER ARCHIVES - COMMUNICATION SYSTEM ===\n")
-    archivist_id = input("Input Stream active. Enter archivist ID: ")
-    status_report = input("Input Stream active. Enter status report: ")
+    try:
+        archivist_id = input("Input Stream active. Enter archivist ID: ")
+        status_report = input("Input Stream active. Enter status report: ")
+    except Exception as e:
+        print(f"Error: {e}", file=sys.stderr)
+        return
 
     print()
     print(

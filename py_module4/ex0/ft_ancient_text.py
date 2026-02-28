@@ -1,5 +1,6 @@
 def ft_ancient_text() -> None:
     vault = "ancient_fragment.txt"
+    file = None
 
     try:
         print("=== CYBER ARCHIVES - DATA RECOVERY SYSTEM ===\n")
@@ -8,11 +9,13 @@ def ft_ancient_text() -> None:
         print("Connection established...\n")
         print("RECOVERED DATA:")
         print(file.read())
-        file.close()
-        print("\nData recovery complete. Storage unit disconnected.")
 
-    except (FileNotFoundError, PermissionError, IsADirectoryError) as e:
+    except Exception as e:
         print(f"Error: {e}")
+    finally:
+        if file:
+            file.close()
+            print("\nData recovery complete. Storage unit disconnected.")
 
 
 if __name__ == "__main__":
