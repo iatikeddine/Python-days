@@ -1,5 +1,6 @@
-from typing import Protocol, Any, Dict, List
+from typing import Protocol, Any, Dict, List, Union, Optional
 from abc import ABC, abstractmethod
+from collections import defaultdict
 
 
 class ProcessingStage(Protocol):
@@ -104,7 +105,7 @@ class ProcessingPipeline(ABC):
         self.processing_units: List[int] = []
 
     @abstractmethod
-    def process(self, data: Any) -> Any:
+    def process(self, data: Any) -> Union[str, Any]:
         ...
 
     @abstractmethod
@@ -164,7 +165,7 @@ class JSONAdapter(ProcessingPipeline):
     def supports(self, data: Any) -> bool:
         return isinstance(data, dict)
 
-    def process(self, data: Any) -> Any:
+    def process(self, data: Any) -> Union[str, Any]:
         if not self.supports(data):
             raise ValueError("Error: invalid data (not a dict)")
         try:
@@ -183,7 +184,7 @@ class CSVAdapter(ProcessingPipeline):
     def supports(self, data: Any) -> bool:
         return isinstance(data, str)
 
-    def process(self, data: Any) -> Any:
+    def process(self, data: Any) -> Union[str, Any]:
         if not self.supports(data):
             raise ValueError("Error: invalid data (not a string)")
         try:
@@ -202,7 +203,7 @@ class StreamAdapter(ProcessingPipeline):
     def supports(self, data: Any) -> bool:
         return isinstance(data, list)
 
-    def process(self, data: Any) -> Any:
+    def process(self, data: Any) -> Union[str, Any]:
         if not self.supports(data):
             raise ValueError("Error: invalid data (not a list)")
         try:
