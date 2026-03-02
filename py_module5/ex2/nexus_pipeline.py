@@ -11,7 +11,7 @@ class ProcessingStage(Protocol):
 class InputStage:
     def process(self, data: Any) -> Dict[str, Any]:
         if data is None:
-            raise ValueError("Error: Invalid data")
+            raise ValueError("Error: None is not a valid Data")
 
         if isinstance(data, dict):
             return {
@@ -20,13 +20,20 @@ class InputStage:
             }
 
         if isinstance(data, str):
-            csv_parts = [part.strip() for part in data.split(",") if part.strip()]
+            csv_parts = [part.strip() for part in data.split(",")
+                         if part.strip()]
             if len(csv_parts) < 2:
                 raise ValueError("Error: Invalid format for CSV")
-            return {"payload": csv_parts, "type": "csv"}
+            return {
+                "payload": csv_parts,
+                "type": "csv"
+            }
 
         if isinstance(data, list):
-            return {"payload": [item for item in data], "type": "list"}
+            return {
+                "payload": [item for item in data],
+                "type": "list"
+            }
 
         if isinstance(data, (int, float)):
             return {"payload": data, "type": "number"}
@@ -39,21 +46,25 @@ class TransformStage:
         if not isinstance(data, dict):
             raise ValueError("Error: Data is not a dictionary")
 
-        transformed: Dict[str, Any] = {key: value for key, value in data.items()}
+        transformed: Dict[str, Any] = {key: value
+                                       for key, value in data.items()}
         payload = transformed.get("payload")
         data_type = transformed.get("type")
         transformed["timestamp"] = f"step-{data_type}-{len(str(payload))}"
 
         if data_type == "list":
-            numeric_values = [value for value in payload if isinstance(value, (int, float))]
+            numeric_values = [value for value in payload
+                              if isinstance(value, (int, float))]
             transformed["count"] = len(payload)
             transformed["average"] = (
-                sum(numeric_values) / len(numeric_values) if numeric_values else None
+                sum(numeric_values) / len(numeric_values)
+                if numeric_values else None
             )
         elif data_type == "csv":
             transformed["words"] = len(payload)
             transformed["length"] = sum(len(value) for value in payload)
-            transformed["unique_words"] = len({value.lower() for value in payload})
+            transformed["unique_words"] = len({value.lower()
+                                               for value in payload})
         elif data_type == "number":
             transformed["is_positive"] = payload > 0
         elif data_type == "dict":
@@ -84,16 +95,16 @@ class OutputStage:
         if data_type == "number":
             return (
                 f'Processed number: {payload} positive: '
-                f'{data.get("is_positive", False)}'
+                f'{data.get("is_positive")}'
             )
         if data_type == "dict":
-            digest = {
+            extract = {
                 key: data[key]
                 for key in ("type", "size", "timestamp")
                 if key in data
             }
-            return f"Processed dict -> {digest}"
-        return f"Processed {data_type} -> {data.get('timestamp', 'n/a')}"
+            return f"Processed dict -> {extract}"
+        return f"Processed {data_type} -> {data.get('timestamp')}"
 
 
 class ProcessingPipeline(ABC):
@@ -124,7 +135,7 @@ class ProcessingPipeline(ABC):
         return result
 
     def record_run(self, include_output: bool, succeeded: bool) -> None:
-        units = len(self.stages) if include_output else max(len(self.stages) - 1, 0)
+        units = len(self.stages) if include_output else len(self.stages) - 1
         self.processing_units.append(units)
         if len(self.processing_units) > 200:
             self.processing_units.pop(0)
