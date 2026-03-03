@@ -1,11 +1,10 @@
-from typing import Protocol, Any, Dict, List, Union, Optional
+from typing import Protocol, Any, Dict, List, Union
 from abc import ABC, abstractmethod
-from collections import defaultdict
 
 
 class ProcessingStage(Protocol):
     def process(self, data: Any) -> Any:
-        ...
+        pass
 
 
 class InputStage:
@@ -84,12 +83,12 @@ class OutputStage:
 
         if data_type == "csv":
             return (
-                f'Processed text: {data.get("words", 0)} words, '
-                f'{data.get("length", 0)} chars'
+                f'Processed text: {data.get("words")} words, '
+                f'{data.get("length")} chars'
             )
         if data_type == "list":
             return (
-                f'Processed list -> {data.get("count", 0)} items '
+                f'Processed list -> {data.get("count")} items '
                 f'(avg: {data.get("average")})'
             )
         if data_type == "number":
@@ -117,11 +116,11 @@ class ProcessingPipeline(ABC):
 
     @abstractmethod
     def process(self, data: Any) -> Union[str, Any]:
-        ...
+        pass
 
     @abstractmethod
     def supports(self, data: Any) -> bool:
-        ...
+        pass
 
     def add_stage(self, stage: ProcessingStage) -> None:
         self.stages.append(stage)
@@ -137,8 +136,6 @@ class ProcessingPipeline(ABC):
     def record_run(self, include_output: bool, succeeded: bool) -> None:
         units = len(self.stages) if include_output else len(self.stages) - 1
         self.processing_units.append(units)
-        if len(self.processing_units) > 200:
-            self.processing_units.pop(0)
         if succeeded:
             self.metrics["processed"] += 1
         else:
@@ -158,7 +155,7 @@ class ProcessingPipeline(ABC):
         average_units = (
             sum(self.processing_units) / len(self.processing_units)
             if self.processing_units
-            else 0.0
+            else 0
         )
         return {
             "pipeline_id": self.pipeline_id,
@@ -231,7 +228,6 @@ class NexusManager:
         self.pipelines: Dict[str, ProcessingPipeline] = {}
         self.metrics: Dict[str, int] = {"processed": 0, "failed": 0}
         self.failures: List[str] = []
-        self.pipeline_loads: Dict[str, List[int]] = {}
 
     def add_pipeline(self, pipeline: ProcessingPipeline) -> None:
         self.pipelines[pipeline.pipeline_id] = pipeline
@@ -253,17 +249,10 @@ class NexusManager:
                 result = pipeline.process(element)
                 results.append(result)
                 self.metrics["processed"] += 1
-                if pipeline.pipeline_id not in self.pipeline_loads:
-                    self.pipeline_loads[pipeline.pipeline_id] = []
-                self.pipeline_loads[pipeline.pipeline_id].append(1)
             except ValueError as error:
                 self.metrics["failed"] += 1
                 self.failures.append(str(error))
-                if len(self.failures) > 20:
-                    self.failures.pop(0)
-                print(f"Error detected in pipeline: {error}")
-                print("Recovery initiated: Switching to backup processor")
-                print("Recovery successful: Pipeline restored, processing resumed")
+                print(f"Error: {error}")
                 continue
 
         return results
@@ -282,22 +271,17 @@ class NexusManager:
             except ValueError as error:
                 self.metrics["failed"] += 1
                 self.failures.append(str(error))
-                if len(self.failures) > 20:
-                    self.failures.pop(0)
-                print(f"Error detected in chain at {pipeline_id}: {error}")
-                print("Recovery initiated: skipping to next stage")
+                print(f"Error in chain at {pipeline_id}: {error}")
                 continue
 
-        return OutputStage().process(current) if isinstance(current, dict) else current
+        if isinstance(current, dict):
+            return OutputStage().process(current)
+        return current
 
     def get_stats(self) -> Dict[str, Any]:
         pipeline_stats = {
             pipeline_id: pipeline.get_stats()
             for pipeline_id, pipeline in self.pipelines.items()
-        }
-        average_load = {
-            pipeline_id: round(sum(units) / len(units), 6) if units else 0.0
-            for pipeline_id, units in self.pipeline_loads.items()
         }
         return {
             "manager": {
@@ -306,7 +290,6 @@ class NexusManager:
                 "recent_failures": [failure for failure in self.failures],
             },
             "pipelines": pipeline_stats,
-            "avg_pipeline_load": average_load,
         }
 
 
@@ -326,9 +309,8 @@ if __name__ == "__main__":
         {"sensor": "temp", "value": 23.5},
         "user,action,timestamp",
         [22.1, 23.5, 21.8],
+        [1, 2, 3, 4]
     ]
-
-    results = manager.process_data(data_list)
 
     print("Initializing Nexus Manager...")
     print("Pipeline capacity: 1000 streams/second\n")
@@ -339,28 +321,27 @@ if __name__ == "__main__":
     print("Stage 3: Output formatting and delivery")
 
     print("\n=== Multi-Format Data Processing ===\n")
-    print("Processing JSON data through pipeline...")
-    print(f"input: {data_list[0]}")
-    print("Transform: Enriched with metadata and validation")
-    print(f"Output: {results[0]}")
 
-    print("\nProcessing CSV data through same pipeline...")
-    print(f'input: "{data_list[1]}"')
-    print("Transform: Parsed and structured data")
-    print(f"Output: {results[1]}")
+    if not data_list:
+        print("No data to process.")
+    else:
+        results = manager.process_data(data_list)
+        for idx, (data, result) in enumerate(zip(data_list, results), 1):
+            print(f"Processing item {idx}:")
+            print(f"  Input: {data}")
+            print(f"  Output: {result}")
+            print()
 
-    print("\nProcessing Stream data through same pipeline...")
-    print(f"Input: {data_list[2]}")
-    print("Transform: Aggregated and filtered")
-    print(f"Output: {results[2]}")
-
-    print("\n=== Pipeline Chaining Demo ===")
-    chain_output = manager.chain_process(
-        {"a": 1, "b": 2, "c": 3},
-        ["json_1", "csv_1", "stream_1"],
-    )
-    print("Pipeline A -> Pipeline B -> Pipeline C")
-    print(f"Chained Output: {chain_output}")
+    print("=== Pipeline Chaining Demo ===")
+    try:
+        chain_output = manager.chain_process(
+            {"a": 1, "b": 2, "c": 3},
+            ["json_1", "csv_1", "stream_1"],
+        )
+        print("Pipeline A -> Pipeline B -> Pipeline C")
+        print(f"Chained Output: {chain_output}")
+    except ValueError as e:
+        print(f"Chain processing failed: {e}")
 
     print("\n=== Error Recovery Test ===")
     corrupted_data = [None, "test,hello", [1, 2, 4]]
@@ -371,6 +352,5 @@ if __name__ == "__main__":
     stats = manager.get_stats()
     print(f"Manager stats: {stats['manager']}")
     print(f"Pipeline stats: {stats['pipelines']}")
-    print(f"Average pipeline load: {stats['avg_pipeline_load']}")
 
     print("\nNexus Integration complete. All systems operational")
