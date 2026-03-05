@@ -354,6 +354,7 @@ def nexus_pipeline() -> None:
         print("\n=== Performance & Statistics ===")
         stats = manager.get_stats()
         print(f"Manager stats: {stats['manager']}")
+        print(f"Pipelines stats: {stats['pipelines']}")
     except Exception as e:
         print(e)
 
