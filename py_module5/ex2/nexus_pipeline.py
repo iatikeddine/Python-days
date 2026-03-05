@@ -1,5 +1,7 @@
 from typing import Protocol, Any, Dict, List, Union
 from abc import ABC, abstractmethod
+import collections
+del collections
 
 
 class ProcessingStage(Protocol):
@@ -57,7 +59,7 @@ class TransformStage:
             transformed["count"] = len(payload)
             transformed["average"] = (
                 sum(numeric_values) / len(numeric_values)
-                if numeric_values else None
+                if numeric_values else 0
             )
         elif data_type == "csv":
             transformed["words"] = len(payload)
@@ -162,7 +164,7 @@ class ProcessingPipeline(ABC):
             "total_calls": total_calls,
             "processed": self.metrics["processed"],
             "failed": self.metrics["failed"],
-            "avg_work_units": round(average_units, 6),
+            "avg_work_units": round(average_units, 1),
         }
 
 
@@ -228,8 +230,11 @@ class NexusManager:
         self.pipelines: Dict[str, ProcessingPipeline] = {}
         self.metrics: Dict[str, int] = {"processed": 0, "failed": 0}
         self.failures: List[str] = []
+        print("Initializing Nexus Manager...")
 
     def add_pipeline(self, pipeline: ProcessingPipeline) -> None:
+        if not isinstance(pipeline, ProcessingPipeline):
+            raise ValueError("error: invalid pipeline")
         self.pipelines[pipeline.pipeline_id] = pipeline
 
     def find_pipeline(self, data: Any) -> ProcessingPipeline:
@@ -249,7 +254,7 @@ class NexusManager:
                 result = pipeline.process(element)
                 results.append(result)
                 self.metrics["processed"] += 1
-            except ValueError as error:
+            except Exception as error:
                 self.metrics["failed"] += 1
                 self.failures.append(str(error))
                 print(f"Error: {error}")
@@ -259,11 +264,13 @@ class NexusManager:
 
     def chain_process(self, data: Any, pipeline_order: List[str]) -> Any:
         if not pipeline_order:
-            raise ValueError("Pipeline order cannot be empty")
+            raise ValueError("error: pipeline order cannot be empty")
 
-        current: Any = data
+        current = data
         for pipeline_id in pipeline_order:
             pipeline = self.pipelines.get(pipeline_id)
+            if not isinstance(pipeline, ProcessingPipeline):
+                raise ValueError("error: pipeline not valid")
             if pipeline is None:
                 raise ValueError(f"Pipeline {pipeline_id} is not configured")
             try:
@@ -295,15 +302,9 @@ class NexusManager:
 
 if __name__ == "__main__":
     print("=== CODE NEXUS - ENTERPRISE PIPELINE SYSTEM ===\n")
-
-    manager = NexusManager()
     json_adapter = JSONAdapter("json_1")
     csv_adapter = CSVAdapter("csv_1")
     stream_adapter = StreamAdapter("stream_1")
-
-    manager.add_pipeline(json_adapter)
-    manager.add_pipeline(csv_adapter)
-    manager.add_pipeline(stream_adapter)
 
     data_list = [
         {"sensor": "temp", "value": 23.5},
@@ -312,13 +313,10 @@ if __name__ == "__main__":
         [1, 2, 3, 4]
     ]
 
-    print("Initializing Nexus Manager...")
-    print("Pipeline capacity: 1000 streams/second\n")
-
-    print("Creating Data Processing Pipeline...")
-    print("Stage 1: Input validation and parsing")
-    print("Stage 2: Data transformation and enrichment")
-    print("Stage 3: Output formatting and delivery")
+    manager = NexusManager()
+    manager.add_pipeline(json_adapter)
+    manager.add_pipeline(csv_adapter)
+    manager.add_pipeline(stream_adapter)
 
     print("\n=== Multi-Format Data Processing ===\n")
 
@@ -326,10 +324,12 @@ if __name__ == "__main__":
         print("No data to process.")
     else:
         results = manager.process_data(data_list)
-        for idx, (data, result) in enumerate(zip(data_list, results), 1):
-            print(f"Processing item {idx}:")
+        item = 1
+        for data, result in zip(data_list, results):
+            print(f"Processing item {item}:")
             print(f"  Input: {data}")
             print(f"  Output: {result}")
+            item += 1
             print()
 
     print("=== Pipeline Chaining Demo ===")
@@ -351,6 +351,5 @@ if __name__ == "__main__":
     print("\n=== Performance & Statistics ===")
     stats = manager.get_stats()
     print(f"Manager stats: {stats['manager']}")
-    print(f"Pipeline stats: {stats['pipelines']}")
 
     print("\nNexus Integration complete. All systems operational")

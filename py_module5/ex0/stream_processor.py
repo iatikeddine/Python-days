@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, List, Dict, Union, Optional
+del Dict, Optional
 
 
 class DataProcessor(ABC):
@@ -18,17 +19,14 @@ class DataProcessor(ABC):
 
 class NumericProcessor(DataProcessor):
     def validate(self, data: Any) -> bool:
-        # checks if data is a list
         if not data:
             return False
         elif type(data).__name__ == "list":
-            # check if all elements inside the list are floats or ints
             for element in data:
-                if type(element).__name__ == "int" or\
-                        type(element).__name__ == "float":
-                    return True
-                else:
+                if (type(element).__name__ != "int" and
+                        type(element).__name__ != "float"):
                     return False
+            return True
         elif type(data).__name__ == "int" or type(data).__name__ == "float":
             return True
         return False
@@ -41,10 +39,14 @@ class NumericProcessor(DataProcessor):
                 avg: float = total / numeric_value
                 return (f"Processed {numeric_value} numeric values,"
                         f" sum={total}, avg={avg:.1f}")
-            except (TypeError,):
+            except (TypeError, ZeroDivisionError):
                 return "Error: Data contains non numeric values or is empty"
         else:
-            return (f"Processed 1 numeric value, sum={data}, avg={data:.1f}")
+            try:
+                return (f"Processed 1 numeric value, sum={data}, "
+                        f"avg={data:.1f}")
+            except TypeError:
+                return "Error: Data is not a valid numeric value"
 
 
 class TextProcessor(DataProcessor):
@@ -67,11 +69,14 @@ class LogProcessor(DataProcessor):
         if type(data).__name__ != "str" or not data:
             return False
 
-        check: list = data.split(":")
-        if len(check) > 1:
-            logs: List[str] = ["ERROR", "INFO"]
-            if check[0] in logs:
-                return True
+        try:
+            check: list[str] = data.split(":")
+            if len(check) > 1:
+                logs: List[str] = ["ERROR", "INFO"]
+                if check[0] in logs:
+                    return True
+        except (IndexError, AttributeError):
+            return False
         return False
 
     def process(self, data: Any) -> str:
@@ -92,52 +97,68 @@ class LogProcessor(DataProcessor):
 
 def stream_processor() -> None:
     print("=== CODE NEXUS - DATA PROCESSOR FOUNDATION ===\n")
-    num_process: NumericProcessor = NumericProcessor()
-    print("Initializing Numeric Processor...")
-    data_1: list = [1, 2, 3, 4, 5]
-    print(f"Processing data: {data_1}")
-    if num_process.validate(data_1):
-        print("Validation: Numeric data verified")
-        print(num_process.format_output(num_process.process(data_1)))
-    else:
-        print("Validation: Could not verify numeric data")
+    try:
+        num_process: NumericProcessor = NumericProcessor()
+        print("Initializing Numeric Processor...")
+        data_1: list[int] = [1, 2, 3, 4, 5]
+        print(f"Processing data: {data_1}")
+        if num_process.validate(data_1):
+            print("Validation: Numeric data verified")
+            print(num_process.format_output(num_process.process(data_1)))
+        else:
+            print("Validation: Could not verify numeric data")
+    except Exception as e:
+        print(e)
 
-    print("\nInitializing Text Processor...")
-    text_processor: TextProcessor = TextProcessor()
-    data_2: str = "Hello Nexus World"
-    print(f'Processing data: "{data_2}"')
-    if text_processor.validate(data_2):
-        print("Validation: Text data verified")
-        txt_pr: str = text_processor.process(data_2)
-        print(f"{text_processor.format_output(txt_pr)}")
-    else:
-        print("Validation:: Could not verify text data")
+    try:
+        print("\nInitializing Text Processor...")
+        text_processor: TextProcessor = TextProcessor()
+        data_2: str = "Hello Nexus World"
+        print(f'Processing data: "{data_2}"')
+        if text_processor.validate(data_2):
+            print("Validation: Text data verified")
+            txt_pr: str = text_processor.process(data_2)
+            print(f"{text_processor.format_output(txt_pr)}")
+        else:
+            print("Validation:: Could not verify text data")
+    except Exception as e:
+        print(e)
 
-    print("\nInitializing Log Processor...")
-    log_processor: LogProcessor = LogProcessor()
-    data_3: str = "ERROR: Connection timeout"
-    print(f'Processing data: "{data_3}"')
-    if log_processor.validate(data_3):
-        print("Validation: Log entry verified")
-        print(f"{log_processor.format_output(log_processor.process(data_3))}")
-    else:
-        print("Validation: Could not verify log entry")
+    try:
+        print("\nInitializing Log Processor...")
+        log_processor: LogProcessor = LogProcessor()
+        data_3: str = "ERROR: Connection timeout"
+        print(f'Processing data: "{data_3}"')
+        if log_processor.validate(data_3):
+            print("Validation: Log entry verified")
+            output = log_processor.process(data_3)
+            print(f"{log_processor.format_output(output)}")
+        else:
+            print("Validation: Could not verify log entry")
+    except Exception as e:
+        print(e)
 
-    print("\n=== Polymorphic Processing Demo ===")
-    print("Processing multiple data types through same interface...")
-    data_list: List[Union[List[int], str]] = [
-        [1, 2, 3],
-        "Hello, world",
-        "INFO: System ready"
-    ]
-    processors: List[DataProcessor] = [
-        num_process, text_processor, log_processor
-    ]
-    result: int = 1
-    for processor, data in zip(processors, data_list):
-        print(f"Result {result}: {processor.process(data)}")
-        result += 1
-    print("\nFoundation systems online. Nexus ready for advanced streams.")
+    try:
+        print("\n=== Polymorphic Processing Demo ===")
+        print("Processing multiple data types through same interface...")
+        data_list: List[Union[List[int], str]] = [
+            [1, 2, 3],
+            "Hello, world",
+            "INFO: System ready"
+        ]
+        processors: List[DataProcessor] = [
+            num_process, text_processor, log_processor
+        ]
+        result: int = 1
+        for processor, data in zip(processors, data_list):
+            if processor.validate(data):
+                print(f"Result {result}: {processor.process(data)}")
+                result += 1
+            else:
+                print("error: skiped invalid data")
+        print("\nFoundation systems online. Nexus ready for advanced streams.")
+    except Exception as e:
+        print(e)
 
 
 if __name__ == "__main__":
