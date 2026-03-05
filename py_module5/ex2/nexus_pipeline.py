@@ -148,7 +148,7 @@ class ProcessingPipeline(ABC):
             result = self.run_stages(data, include_output=False)
             self.record_run(include_output=False, succeeded=True)
             return result
-        except ValueError:
+        except Exception:
             self.record_run(include_output=False, succeeded=False)
             raise
 
@@ -182,7 +182,7 @@ class JSONAdapter(ProcessingPipeline):
             result = self.run_stages(data, include_output=True)
             self.record_run(include_output=True, succeeded=True)
             return result
-        except ValueError:
+        except Exception:
             self.record_run(include_output=True, succeeded=False)
             raise
 
@@ -201,7 +201,7 @@ class CSVAdapter(ProcessingPipeline):
             result = self.run_stages(data, include_output=True)
             self.record_run(include_output=True, succeeded=True)
             return result
-        except ValueError:
+        except Exception:
             self.record_run(include_output=True, succeeded=False)
             raise
 
@@ -220,7 +220,7 @@ class StreamAdapter(ProcessingPipeline):
             result = self.run_stages(data, include_output=True)
             self.record_run(include_output=True, succeeded=True)
             return result
-        except ValueError:
+        except Exception:
             self.record_run(include_output=True, succeeded=False)
             raise
 
@@ -275,7 +275,7 @@ class NexusManager:
                 raise ValueError(f"Pipeline {pipeline_id} is not configured")
             try:
                 current = pipeline.process_for_chain(current)
-            except ValueError as error:
+            except Exception as error:
                 self.metrics["failed"] += 1
                 self.failures.append(str(error))
                 print(f"Error in chain at {pipeline_id}: {error}")
@@ -300,7 +300,7 @@ class NexusManager:
         }
 
 
-if __name__ == "__main__":
+def nexus_pipeline() -> None:
     print("=== CODE NEXUS - ENTERPRISE PIPELINE SYSTEM ===\n")
     json_adapter = JSONAdapter("json_1")
     csv_adapter = CSVAdapter("csv_1")
@@ -319,18 +319,20 @@ if __name__ == "__main__":
     manager.add_pipeline(stream_adapter)
 
     print("\n=== Multi-Format Data Processing ===\n")
-
-    if not data_list:
-        print("No data to process.")
-    else:
-        results = manager.process_data(data_list)
-        item = 1
-        for data, result in zip(data_list, results):
-            print(f"Processing item {item}:")
-            print(f"  Input: {data}")
-            print(f"  Output: {result}")
-            item += 1
-            print()
+    try:
+        if not data_list:
+            print("No data to process.")
+        else:
+            results = manager.process_data(data_list)
+            item = 1
+            for data, result in zip(data_list, results):
+                print(f"Processing item {item}:")
+                print(f"  Input: {data}")
+                print(f"  Output: {result}")
+                item += 1
+                print()
+    except Exception as e:
+        print(e)
 
     print("=== Pipeline Chaining Demo ===")
     try:
@@ -340,16 +342,26 @@ if __name__ == "__main__":
         )
         print("Pipeline A -> Pipeline B -> Pipeline C")
         print(f"Chained Output: {chain_output}")
-    except ValueError as e:
+    except Exception as e:
         print(f"Chain processing failed: {e}")
 
     print("\n=== Error Recovery Test ===")
-    corrupted_data = [None, "test,hello", [1, 2, 4]]
-    print("Simulating pipeline failure...")
-    manager.process_data(corrupted_data)
+    try:
+        corrupted_data = [None, "test,hello", [1, 2, 4]]
+        print("Simulating pipeline failure...")
+        manager.process_data(corrupted_data)
 
-    print("\n=== Performance & Statistics ===")
-    stats = manager.get_stats()
-    print(f"Manager stats: {stats['manager']}")
+        print("\n=== Performance & Statistics ===")
+        stats = manager.get_stats()
+        print(f"Manager stats: {stats['manager']}")
+    except Exception as e:
+        print(e)
 
     print("\nNexus Integration complete. All systems operational")
+
+
+if __name__ == "__main__":
+    try:
+        nexus_pipeline()
+    except Exception as e:
+        print(e)
