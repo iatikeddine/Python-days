@@ -1,0 +1,3 @@
+[submodule "py_module7"]
+	path = py_module7
+	url = git@github.com:iatikeddine/py_module7.git
