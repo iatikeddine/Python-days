@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "ex1"
+version = "0.1.0"
+description = "Matrix Data Analysis Pipeline"
+authors = ["Your Name <your.email@student.1337.ma>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pandas = "^2.3.3"
+numpy = "^2.2.6"
+matplotlib = "^3.10.8"
+requests = "^2.32.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
